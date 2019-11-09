@@ -1,239 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Adithya - PW project</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom fonts for this template -->
-    <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="vendor/devicons/css/devicons.min.css" rel="stylesheet">
-    <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
-    <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
-    <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
-
-
-
-    <!-- Custom styles for this template -->
-    <link href="css/resume.min.css" rel="stylesheet">
-
-  </head>
-
-  <body id="page-top">
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
-      <a class="navbar-brand js-scroll-trigger" href="#page-top">
-        <span class="d-block d-lg-none">Start</span>
-        <span class="d-none d-lg-block">
-          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/profile.jpg" alt="">
-        </span>
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#about">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#education">Education</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#skills">Skills</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <div class="container-fluid p-0">
-
-      <section class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
-        <div class="my-auto">
-          <h1 class="mb-0">Adithya
-            <span class="text-primary">Dev</span>
-          </h1>
-          <div class="subheading mb-5">Marathahalli · Bengaluru, 560 037 · (+91) 7259640512 ·
-            <a href="mailto:name@email.com">mr.adithya.atg@gmail.com</a>
-          </div>
-          <p class="mb-5">I am a dreamer</p>
-          <ul class="list-inline list-social-icons mb-0">
-            <li class="list-inline-item">
-              <a href="#">
-                <span class="fa-stack fa-lg">
-                  <i class="fa fa-circle fa-stack-2x"></i>
-                  <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-                </span>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <span class="fa-stack fa-lg">
-                  <i class="fa fa-circle fa-stack-2x"></i>
-                  <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-                </span>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <span class="fa-stack fa-lg">
-                  <i class="fa fa-circle fa-stack-2x"></i>
-                  <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
-                </span>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <span class="fa-stack fa-lg">
-                  <i class="fa fa-circle fa-stack-2x"></i>
-                  <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                </span>
-              </a>
-            </li>
-          </ul>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Home</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="favicon.png" rel="shortcut icon" type="image/x-icon" />
+</head>
+<body>
+    <div id="search">
+        <input id="search-field" type="text" name="search-field" onkeypress="return search(event)"/>
+    </div>
+    <div class="container">
+        <div id="clock"></div>
+        <div class="weather-container">
+            <div class="row">
+                <div id="weather-description"class="inline"></div>
+                <div class="inline">-</div>
+                <div id="temp" class="inline"></div>
+            </div>
         </div>
-      </section>
-
-      <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="education">
-        <div class="my-auto">
-          <h2 class="mb-5">Education</h2>
-
-          <div class="resume-item d-flex flex-column flex-md-row mb-5">
-            <div class="resume-content mr-auto">
-              <h3 class="mb-0">Dayanada Sagar College of engineering</h3>
-              <div class="subheading mb-3">Bachelor of Engineering</div>
-              <div>Computer Science and Engineering</div>
+        <div class="bookmark-container">
+            <div class="bookmark-set">
+                <div class="bookmark-title">Daily</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://powerschoolgroup.atlassian.net/secure/RapidBoard.jspa?rapidView=1155&projectKey=UCE&selectedIssue=UCE-10097&quickFilter=15942">Jira</a>
+                    <a class="bookmark" href="https://gitswarm.powerschool.com/dashboard/projects/starred">Gitswarm</a>
+                    <a class="bookmark" href="https://insights.newrelic.com/accounts/1434805/dashboards?page=1&sort=Name&filterBy=favorite">New Relic (D)</a>
+                    <a class="bookmark" href="https://insights.newrelic.com/accounts/1166112/explorer/events">New Relic (P)</a>
+                    <a class="bookmark" href="https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logStream:group=unified_classroom-data.powerschoolcorp.com-gimli;streamFilter=typeLogStreamPrefix">CloudWatch</a>
+                    <a class="bookmark" href="http://dogfood.powerschool.com/home">dogfood</a>
+                </div>
             </div>
-            <div class="resume-date text-md-right">
-              <span class="text-primary">2014 - 2018</span>
+            <div class="bookmark-set">
+                <div class="bookmark-title">Gimli</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://api.data.powerschoolcorp.com/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/pod?namespace=gimli">k8s dash</a>
+                    <a class="bookmark" href="https://admin.data.powerschoolcorp.com:7001/controller/v1/docs/">Coordinator</a>
+                    <a class="bookmark" href="https://accounts.data.powerschoolcorp.com/as/authorization.oauth2?redirect_uri=https%3A%2F%2Fclassroom.data.powerschoolcorp.com%2Fcallback&scope=openid%20profile&client_id=commonportal&response_type=code">Classroom</a>
+                    <a class="bookmark" href="https://ps4.data.powerschoolcorp.com/admin/pw.html">SIS - PS4</a>
+                    <a class="bookmark" href="https://ps6.data.powerschoolcorp.com/admin/pw.html">SIS - PS6</a>
+                </div>
             </div>
-          </div>
-
-          <div class="resume-item d-flex flex-column flex-md-row">
-            <div class="resume-content mr-auto">
-              <h3 class="mb-0">India International School</h3>
-              <div class="subheading mb-3">10th grade</div>
+            <div class="bookmark-set">
+            <div class="bookmark-title">Arwen</div>
+            <div class="bookmark-inner-container">
+                <a class="bookmark" href="https://admin:Uc8NkOH7q9zVRzzd3N5AVf9hKE7m8PLA@api.develop.powerschoolcorp.com/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/pod?namespace=arwen">k8s dash</a>
+                <a class="bookmark" href="https://admin-arwen.develop.powerschoolcorp.com:7001/controller/v1/docs/">Coordinator</a>
+                <a class="bookmark" href="https://accounts-arwen.develop.powerschoolcorp.com/as/authorization.oauth2?redirect_uri=https%3A%2F%2Fclassroom-arwen.develop.powerschoolcorp.com%2Fcallback&scope=openid%20profile&client_id=commonportal&response_type=code">Classroom</a>
+                <a class="bookmark" href="https://ps1-arwen.develop.powerschoolcorp.com/admin/pw.html">SIS - PS1</a>
             </div>
-            <div class="resume-date text-md-right">
-              <span class="text-primary">2012 - 2006</span>
             </div>
-          </div>
-
+            <div class="bookmark-set">
+                <div class="bookmark-title">Legolas</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://admin:YUm79lRuGumOf7PBnaiBAJalh7EQSItV@api.test.powerschoolcorp.com/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/pod?namespace=legolas">k8s dash</a>
+                    <a class="bookmark" href="https://admin-legolas.test.powerschoolcorp.com:7001/controller/v1/docs/">Coordinator</a>
+                    <a class="bookmark" href="https://accounts-legolas.test.powerschoolcorp.com/as/authorization.oauth2?redirect_uri=https%3A%2F%2Fclassroom-legolas.test.powerschoolcorp.com%2Fcallback&scope=openid%20profile&client_id=commonportal&response_type=code">Classroom</a>
+                    <a class="bookmark" href="https://ps1-legolas.test.powerschoolcorp.com/admin/pw.html">SIS - PS1</a>
+                    <a class="bookmark" href="https://ps3-legolas.test.powerschoolcorp.com/admin/pw.html">SIS - PS3</a>
+                    <a class="bookmark" href="https://eopte.eschoolplus.powerschool.com/eSchoolPLUS_QA/">eSP</a>
+                </div>
+            </div>
         </div>
-      </section>
-
-      <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="skills">
-        <div class="my-auto">
-          <h2 class="mb-5">Skills</h2>
-
-          <div class="subheading mb-3">Programming Languages &amp; Tools</div>
-          <ul class="list-inline list-icons">
-            <li class="list-inline-item">
-              <i class="devicons devicons-html5"></i>
-            </li>
-            <li class="list-inline-item">
-              <i class="devicons devicons-css3"></i>
-            </li>
-            <li class="list-inline-item">
-              <i class="devicons devicons-javascript"></i>
-            </li>
-            </li>
-            <li class="list-inline-item">
-              <i class="devicon-python-plain"></i>
-            </li>
-            <li class="list-inline-item">
-              <i class="devicon-c-plain"></i>
-            </li>
-            <li class="list-inline-item">
-              <i class="devicon-cplusplus-plain"></i>
-            </li>
-          </ul>
-      </section>
-
-      <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="interests">
-        <div class="my-auto">
-          <h2 class="mb-5">Interests</h2>
-          <ul class="fa-ul mb-0">
-            <li>
-              <i class="fa-li fa fa-check"></i>
-              Machine Learning</li>
-            <li>
-              <i class="fa-li fa fa-check"></i>
-              Web Devolopment</li>
-            <li>
-              <i class="fa-li fa fa-check"></i>
-              Basketball</li>
-            <li>
-              <i class="fa-li fa fa-check"></i>
-              Gaming</li>
-          </ul>
-        </div>
-      </section>
-
     </div>
 
-    <!-- Core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search on enter key event
+        function search(e) {
+            if (e.keyCode == 13) {
+                var val = document.getElementById("search-field").value;
+                window.open("https://google.com/search?q=" + val);
+            }
+        }
+        // Get current time and format
+        function getTime() {
+            let date = new Date(),
+                min = date.getMinutes(),
+                sec = date.getSeconds(),
+                hour = date.getHours();
 
-    <!-- Plugin JavaScript -->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+            return "" + 
+                (hour < 10 ? ("0" + hour) : hour) + ":" + 
+                (min < 10 ? ("0" + min) : min) + ":" + 
+                (sec < 10 ? ("0" + sec) : sec);
+        }
 
-    <!-- Custom scripts for this template -->
-    <script src="js/resume.min.js"></script>
+        window.onload = () => {
+            let xhr = new XMLHttpRequest();
+            // Request to open weather map
+            xhr.open('GET', 'http://api.openweathermap.org/data/2.5/weather?id=1277333&units=metric&appid=e5b292ae2f9dae5f29e11499c2d82ece');
+            xhr.onload = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let json = JSON.parse(xhr.responseText);
+                        console.log(json);
+                        document.getElementById("temp").innerHTML = json.main.temp.toFixed(0) + "°C";
+                        document.getElementById("weather-description").innerHTML = json.weather[0].description;
+                    } else {
+                        console.log('error msg: ' + xhr.status);
+                    }
+                }
+            }
+            xhr.send();
+            // Set up the clock
+            document.getElementById("clock").innerHTML = getTime();
+            // Set clock interval to tick clock
+            setInterval( () => {
+                document.getElementById("clock").innerHTML = getTime();
+            },100);
+        }
 
-    <footer class="footer" id="contact">
-              <div class="container">
-                  <div class="row">
-                      <div class="col-md-5">
-                          <h5>Social media</h5>
-                            <hr>
-                          <ul class="nav">
-                              <li class="nav-item"><a href="" class="nav-link pl-0"><i class="fa fa-facebook fa-lg"></i></a></li>
-                              <li class="nav-item"><a href="" class="nav-link"><i class="fa fa-twitter fa-lg"></i></a></li>
-                              <li class="nav-item"><a href="" class="nav-link"><i class="fa fa-github fa-lg"></i></a></li>
-                              <li class="nav-item"><a href="" class="nav-link"><i class="fa fa-instagram fa-lg"></i></a></li>
-                          </ul>
-                          <br>
-                      </div>
-                      <div class="col-md-2">
-                          <h5 class="text-md-right">Contact Me</h5>
-                          <hr>
-                      </div>
-                      <div class="col-md-5">
-                          <form>
-                              <fieldset class="form-group">
-                                  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                              </fieldset>
-                              <fieldset class="form-group">
-                                  <textarea class="form-control" id="exampleMessage" placeholder="Message"></textarea>
-                              </fieldset>
-                              <fieldset class="form-group text-xs-right">
-                                  <button type="button" class="btn btn-secondary-outline btn-lg">Send</button>
-                              </fieldset>
-                          </form>
-                      </div>
-            </div>
-        </div>
-    </footer>
-
-  </body>
-
+        document.addEventListener("keydown", event => {
+            if (event.keyCode == 32) {          // Spacebar code to open search
+                document.getElementById('search').style.display = 'flex';
+                document.getElementById('search-field').focus();
+            } else if (event.keyCode == 27) {   // Esc to close search
+                document.getElementById('search-field').value = '';
+                document.getElementById('search-field').blur();
+                document.getElementById('search').style.display = 'none';
+            }
+        });
+    </script>
+</body>
 </html>

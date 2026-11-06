@@ -1,128 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
-    <title>Home</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="favicon.png" rel="shortcut icon" type="image/x-icon" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A personal portfolio of selected work, ideas, and the thinking behind them. Local first-edition preview.">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>Selected work — A personal portfolio</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="search">
-        <input id="search-field" type="text" name="search-field" onkeypress="return search(event)"/>
-    </div>
-    <div class="container">
-        <div id="clock"></div>
-        <div class="weather-container">
-            <div class="row">
-                <div id="weather-description"class="inline"></div>
-                <div class="inline">-</div>
-                <div id="temp" class="inline"></div>
-            </div>
-        </div>
-        <div class="bookmark-container">
-            <div class="bookmark-set">
-                <div class="bookmark-title">Daily</div>
-                <div class="bookmark-inner-container">
-                    <a class="bookmark" href="https://powerschoolgroup.atlassian.net/secure/RapidBoard.jspa?rapidView=1155&projectKey=UCE&selectedIssue=UCE-10097&quickFilter=15942">Jira</a>
-                    <a class="bookmark" href="https://gitswarm.powerschool.com/dashboard/projects/starred">Gitswarm</a>
-                    <a class="bookmark" href="https://insights.newrelic.com/accounts/1434805/dashboards?page=1&sort=Name&filterBy=favorite">New Relic (D)</a>
-                    <a class="bookmark" href="https://insights.newrelic.com/accounts/1166112/explorer/events">New Relic (P)</a>
-                    <a class="bookmark" href="https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logStream:group=unified_classroom-data.powerschoolcorp.com-gimli;streamFilter=typeLogStreamPrefix">CloudWatch</a>
-                    <a class="bookmark" href="http://dogfood.powerschool.com/home">dogfood</a>
-                </div>
-            </div>
-            <div class="bookmark-set">
-                <div class="bookmark-title">Gimli</div>
-                <div class="bookmark-inner-container">
-                    <a class="bookmark" href="https://api.data.powerschoolcorp.com/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/pod?namespace=gimli">k8s dash</a>
-                    <a class="bookmark" href="https://admin.data.powerschoolcorp.com:7001/controller/v1/docs/">Coordinator</a>
-                    <a class="bookmark" href="https://accounts.data.powerschoolcorp.com/as/authorization.oauth2?redirect_uri=https%3A%2F%2Fclassroom.data.powerschoolcorp.com%2Fcallback&scope=openid%20profile&client_id=commonportal&response_type=code">Classroom</a>
-                    <a class="bookmark" href="https://ps4.data.powerschoolcorp.com/admin/pw.html">SIS - PS4</a>
-                    <a class="bookmark" href="https://ps6.data.powerschoolcorp.com/admin/pw.html">SIS - PS6</a>
-                </div>
-            </div>
-            <div class="bookmark-set">
-            <div class="bookmark-title">Arwen</div>
-            <div class="bookmark-inner-container">
-                <a class="bookmark" href="https://admin:Uc8NkOH7q9zVRzzd3N5AVf9hKE7m8PLA@api.develop.powerschoolcorp.com/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/pod?namespace=arwen">k8s dash</a>
-                <a class="bookmark" href="https://admin-arwen.develop.powerschoolcorp.com:7001/controller/v1/docs/">Coordinator</a>
-                <a class="bookmark" href="https://accounts-arwen.develop.powerschoolcorp.com/as/authorization.oauth2?redirect_uri=https%3A%2F%2Fclassroom-arwen.develop.powerschoolcorp.com%2Fcallback&scope=openid%20profile&client_id=commonportal&response_type=code">Classroom</a>
-                <a class="bookmark" href="https://ps1-arwen.develop.powerschoolcorp.com/admin/pw.html">SIS - PS1</a>
-            </div>
-            </div>
-            <div class="bookmark-set">
-                <div class="bookmark-title">Legolas</div>
-                <div class="bookmark-inner-container">
-                    <a class="bookmark" href="https://admin:YUm79lRuGumOf7PBnaiBAJalh7EQSItV@api.test.powerschoolcorp.com/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#!/pod?namespace=legolas">k8s dash</a>
-                    <a class="bookmark" href="https://admin-legolas.test.powerschoolcorp.com:7001/controller/v1/docs/">Coordinator</a>
-                    <a class="bookmark" href="https://accounts-legolas.test.powerschoolcorp.com/as/authorization.oauth2?redirect_uri=https%3A%2F%2Fclassroom-legolas.test.powerschoolcorp.com%2Fcallback&scope=openid%20profile&client_id=commonportal&response_type=code">Classroom</a>
-                    <a class="bookmark" href="https://ps1-legolas.test.powerschoolcorp.com/admin/pw.html">SIS - PS1</a>
-                    <a class="bookmark" href="https://ps3-legolas.test.powerschoolcorp.com/admin/pw.html">SIS - PS3</a>
-                    <a class="bookmark" href="https://eopte.eschoolplus.powerschool.com/eSchoolPLUS_QA/">eSP</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Search on enter key event
-        function search(e) {
-            if (e.keyCode == 13) {
-                var val = document.getElementById("search-field").value;
-                window.open("https://google.com/search?q=" + val);
-            }
-        }
-        // Get current time and format
-        function getTime() {
-            let date = new Date(),
-                min = date.getMinutes(),
-                sec = date.getSeconds(),
-                hour = date.getHours();
-
-            return "" + 
-                (hour < 10 ? ("0" + hour) : hour) + ":" + 
-                (min < 10 ? ("0" + min) : min) + ":" + 
-                (sec < 10 ? ("0" + sec) : sec);
-        }
-
-        window.onload = () => {
-            let xhr = new XMLHttpRequest();
-            // Request to open weather map
-            xhr.open('GET', 'https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?id=1277333&units=metric&appid=e5b292ae2f9dae5f29e11499c2d82ece');
-            xhr.onload = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        let json = JSON.parse(xhr.responseText);
-                        console.log(json);
-                        document.getElementById("temp").innerHTML = json.main.temp.toFixed(0) + "°C";
-                        document.getElementById("weather-description").innerHTML = json.weather[0].description;
-                    } else {
-                        console.log('error msg: ' + xhr.status);
-                    }
-                }
-            }
-            xhr.send();
-            // Set up the clock
-            document.getElementById("clock").innerHTML = getTime();
-            // Set clock interval to tick clock
-            setInterval( () => {
-                document.getElementById("clock").innerHTML = getTime();
-            },100);
-        }
-
-        document.addEventListener("keydown", event => {
-            if (event.keyCode == 32) {          // Spacebar code to open search
-                document.getElementById('search').style.display = 'flex';
-                document.getElementById('search-field').focus();
-            } else if (event.keyCode == 27) {   // Esc to close search
-                document.getElementById('search-field').value = '';
-                document.getElementById('search-field').blur();
-                document.getElementById('search').style.display = 'none';
-            }
-        });
-    </script>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="identity" href="#" aria-label="Portfolio home"><span class="identity-mark" aria-hidden="true">*</span><span>Your name<span class="identity-note">PERSONAL PORTFOLIO</span></span></a>
+    <nav aria-label="Main navigation"><a href="#work">Work</a><a href="#about">About</a><a class="nav-contact" href="#contact">Get in touch <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="intro-heading">
+      <div class="eyebrow"><span class="little-dot"></span> A WORK IN PROGRESS. JUST LIKE ME.</div>
+      <h1 id="intro-heading">A little curiosity.<br>A lot of <span class="serif">building.</span><span class="full-stop">*</span></h1>
+      <div class="hero-bottom"><p>A home for the things I build, the problems I explore,<br class="desktop-break"> and the thinking that connects them.</p><a class="text-link" href="#work">Explore selected work <span aria-hidden="true">↓</span></a></div>
+      <div class="hero-caption"><span>IDEAS → DECISIONS → DETAILS</span><span>PORTFOLIO / 01</span></div>
+    </section>
+    <section class="work wrap" id="work" aria-labelledby="work-heading">
+      <div class="section-heading"><h2 id="work-heading"><span class="section-number">01 /</span> Selected work</h2><span class="section-aside">A FEW THINGS, CONSIDERED CAREFULLY.</span></div>
+      <p class="draft-note"><span class="little-dot"></span> Project slots below are layout examples. Real work and details are coming next.</p>
+      <div class="projects">
+        <article class="project">
+          <div class="project-art system-art" role="img" aria-label="Illustrative architecture sketch, showing a request passing through a service into storage. A layout example, not a real project.">
+            <div class="art-top"><span>EXPLORATION — 001</span><span>STRUCTURE & SYSTEMS</span></div>
+            <div class="system-flow"><div class="system-node"><span class="node-symbol">↗</span><span>Request</span></div><span class="connector" aria-hidden="true"></span><div class="system-node central-node"><span class="node-symbol">*</span><span>Service</span></div><span class="connector" aria-hidden="true"></span><div class="system-node"><span class="node-symbol">≋</span><span>Storage</span></div></div>
+            <div class="art-bottom"><span>SMALL PARTS. CLEAR CONNECTIONS.</span><span>FIG. 01</span></div>
+          </div>
+          <div class="project-heading"><h3>Your first project</h3><span class="project-index">01</span></div>
+          <p>The problem, your contribution, and what changed. This space is reserved for a project that shows how you think.</p>
+          <div class="project-tags"><span>PROJECT DETAILS TO ADD</span><span>CASE STUDY</span></div>
+        </article>
+        <article class="project">
+          <div class="project-art interface-art" role="img" aria-label="Illustrative product interface with abstract rows and a chart. A layout example, not a real project.">
+            <div class="art-top"><span>EXPLORATION — 002</span><span>CRAFT & EXPERIENCE</span></div>
+            <div class="mini-window" aria-hidden="true"><div class="window-bar"><i></i><i></i><i></i><span>A DIFFERENT PERSPECTIVE</span></div><div class="window-body"><div class="mini-sidebar"><b></b><b></b><b></b><b></b></div><div class="mini-content"><div class="mini-title"></div><div class="mini-subtitle"></div><div class="mini-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="mini-lines"><i></i><i></i></div></div></div></div>
+            <div class="art-bottom"><span>MAKING THE COMPLEX FEEL SIMPLE.</span><span>FIG. 02</span></div>
+          </div>
+          <div class="project-heading"><h3>Your second project</h3><span class="project-index">02</span></div>
+          <p>A different challenge, a different set of decisions. Add an example that brings another side of your work into focus.</p>
+          <div class="project-tags"><span>PROJECT DETAILS TO ADD</span><span>CASE STUDY</span></div>
+        </article>
+      </div>
+    </section>
+    <section class="about wrap" id="about" aria-labelledby="about-heading">
+      <div class="section-heading"><h2 id="about-heading"><span class="section-number">02 /</span> Behind the work</h2><span class="section-aside">THE PERSON, NOT JUST THE PROFILE.</span></div>
+      <div class="about-grid"><div class="about-statement">The decisions matter.<br>So does the <span class="serif">person<br>making them.</span></div><div class="about-copy"><span class="eyebrow muted">YOUR STORY GOES HERE</span><p>A short introduction to your background, what you enjoy building, and the kinds of problems you want to work on next.</p><p>We’ll keep this personal and specific, with a few meaningful skills supported by the projects above.</p><div class="details-row"><span>BACKGROUND & EXPERIENCE</span><span>To be added</span></div><div class="details-row"><span>CORE SKILLS</span><span>To be added</span></div></div></div>
+    </section>
+    <section class="contact" id="contact" aria-labelledby="contact-heading"><div class="wrap contact-inner"><div class="eyebrow"><span class="little-dot"></span> GOOD CONVERSATIONS START SOMEWHERE.</div><div class="contact-row"><h2 id="contact-heading">Let’s make<br><span class="serif">a connection.</span></h2><div class="contact-info"><span class="contact-asterisk" aria-hidden="true">*</span><p>Your LinkedIn, GitHub, and preferred<br>contact details will live right here.</p><span class="pending-label">CONTACT LINKS TO ADD</span></div></div></div></section>
+  </main>
+  <footer class="wrap site-footer"><span>YOUR NAME <span class="footer-divider">/</span> PERSONAL PORTFOLIO</span><a href="#">Back to top ↑</a><span>FIRST EDITION · LOCAL PREVIEW</span></footer>
 </body>
 </html>

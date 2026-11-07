@@ -4,6 +4,16 @@ const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
 const studies = Array.from(systems.querySelectorAll("[data-study]"));
 
 function selectStudy(index, focus = false) {
+  if (tabs[index].getAttribute("aria-selected") === "true") {
+    if (focus) tabs[index].focus({ preventScroll: true });
+    return;
+  }
+
+  // Finish motion in the outgoing panel before hiding it.
+  studies.forEach((study) => {
+    study.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
+  });
+
   tabs.forEach((tab, tabIndex) => {
     const selected = index === tabIndex;
     const study = studies[tabIndex];
@@ -13,7 +23,10 @@ function selectStudy(index, focus = false) {
     study.hidden = !selected;
   });
 
-  if (focus) tabs[index].focus();
+  if (focus) tabs[index].focus({ preventScroll: true });
+  systems.dispatchEvent(new CustomEvent("studychange", {
+    detail: { study: studies[index] },
+  }));
 }
 
 tabs.forEach((tab, index) => {

@@ -59,8 +59,8 @@
         </div>
         <div class="systems" data-systems>
           <div class="systems-header">
-            <span><span class="crosshair" aria-hidden="true">⊕</span> Architecture studies</span>
-            <span>Illustrative</span>
+            <span><span class="crosshair" aria-hidden="true">⊕</span> Illustrative diagrams</span>
+
           </div>
           <div class="systems-tabs" role="tablist" aria-label="Architecture studies" hidden>
             <button type="button" role="tab" id="tab-identity" aria-controls="study-identity" aria-selected="true">Identity</button>
@@ -68,10 +68,11 @@
             <button type="button" role="tab" id="tab-platform" aria-controls="study-platform" aria-selected="false" tabindex="-1">Platforms</button>
           </div>
 
+          <div class="systems-panels">
           <div id="study-identity" data-study>
             <figure class="system-study">
               <div class="system-stage">
-                <svg viewBox="8 40 492 210" role="img" aria-label="Three example products connect to an Auth0 hub that creates a shared session.">
+                <svg viewBox="0 0 520 288" role="img" aria-label="Three example products connect to an Auth0 hub that creates a shared session.">
                   <g class="draft" fill="none">
                     <circle cx="254" cy="144" r="106"/>
                     <circle cx="254" cy="144" r="122"/>
@@ -79,10 +80,6 @@
                   </g>
                   <g class="traces" fill="none">
                     <path d="M120 69h28a16 16 0 0 1 16 16v43a16 16 0 0 0 16 16h25M120 144h85M120 219h28a16 16 0 0 0 16-16v-43a16 16 0 0 1 16-16h25M303 144h75"/>
-                  </g>
-                  <g class="trace-joints">
-                    <circle cx="164" cy="144" r="4"/><circle cx="344" cy="144" r="4"/>
-                    <circle cx="120" cy="69" r="3"/><circle cx="120" cy="144" r="3"/><circle cx="120" cy="219" r="3"/><circle cx="378" cy="144" r="3"/>
                   </g>
                   <g class="map-node">
                     <rect x="20" y="48" width="110" height="42" rx="5"/>
@@ -94,7 +91,7 @@
                     <rect x="20" y="198" width="110" height="42" rx="5"/>
                     <use href="#icon-stack" x="29" y="210" width="17" height="17"/>
                     <text x="49" y="223">Product C</text>
-                    <rect x="378" y="123" width="110" height="42" rx="5"/>
+                    <rect x="378" y="123" width="136" height="42" rx="5"/>
                     <use href="#icon-session" x="386" y="135" width="17" height="17"/>
                     <text x="409" y="148">SSO session</text>
                   </g>
@@ -106,6 +103,12 @@
                   </g>
                   <path class="direction-tip" d="m371 140 7 4-7 4" fill="none" stroke="currentColor"/>
                   <path class="map-marks" d="M17 20h14m-7-7v14M477 20h14m-7-7v14M17 268h14m-7-7v14M477 268h14m-7-7v14"/>
+                  <g class="flow-packets" aria-hidden="true">
+                    <circle class="flow-packet" r="4" data-phase="input" data-route="M134 69H148Q164 69 164 85V128Q164 144 180 144H201"/>
+                    <circle class="flow-packet" r="4" data-phase="input" data-route="M134 144H201"/>
+                    <circle class="flow-packet" r="4" data-phase="input" data-route="M134 219H148Q164 219 164 203V160Q164 144 180 144H201"/>
+                    <circle class="flow-packet" r="4" data-phase="output" data-route="M307 144H374"/>
+                  </g>
                 </svg>
               </div>
               <figcaption><span class="figure-number">FIG. 01</span><div><strong>Shared sign-on</strong><p>Three example products share an Auth0 session.</p></div></figcaption>
@@ -115,7 +118,7 @@
           <div id="study-events" data-study hidden>
             <figure class="system-study">
               <div class="system-stage">
-                <svg class="workflow-map" viewBox="0 0 480 260" role="img" aria-label="Invitation workflow building blocks. EventBridge Schedules for scheduling, SQS for messages, Step Functions for orchestration, Lambda for execution, and Auth0 for invitations.">
+                <svg class="workflow-map" viewBox="0 0 520 288" role="img" aria-label="Invitation workflow building blocks. EventBridge Schedules for scheduling, SQS for messages, Step Functions for orchestration, Lambda for execution, and Auth0 for invitations.">
   <g class="service-node">
     <rect x="16" y="18" width="216" height="64" rx="7"/><text class="service-role" x="32" y="40">SCHEDULING</text><text x="32" y="65">EventBridge Schedules</text>
     <rect x="248" y="18" width="216" height="64" rx="7"/><text class="service-role" x="264" y="40">MESSAGES</text><text x="264" y="65">SQS</text>
@@ -132,7 +135,7 @@
           <div id="study-platform" data-study hidden>
             <figure class="system-study">
               <div class="system-stage">
-                <svg viewBox="8 40 492 210" role="img" aria-label="React user management and directory modules connect through a Node.js backend to DynamoDB.">
+                <svg viewBox="0 0 520 288" role="img" aria-label="React user management and directory modules connect through a Node.js backend to DynamoDB.">
                   <g class="draft" fill="none">
                     <circle cx="254" cy="144" r="106"/>
                     <circle cx="254" cy="144" r="122"/>
@@ -141,10 +144,6 @@
                   <g class="traces" fill="none">
                     <path d="M151 91h10a16 16 0 0 1 16 16v21a16 16 0 0 0 16 16h12M151 197h10a16 16 0 0 0 16-16v-21a16 16 0 0 1 16-16h12M303 144h64"/>
                   </g>
-                  <g class="trace-joints">
-                    <circle cx="177" cy="144" r="4"/><circle cx="336" cy="144" r="4"/>
-                    <circle cx="151" cy="91" r="3"/><circle cx="151" cy="197" r="3"/><circle cx="367" cy="144" r="3"/>
-                  </g>
                   <g class="map-node">
                     <rect x="20" y="70" width="131" height="42" rx="5"/>
                     <use href="#icon-window" x="29" y="82" width="17" height="17"/>
@@ -152,7 +151,7 @@
                     <rect x="20" y="176" width="131" height="42" rx="5"/>
                     <use href="#icon-window" x="29" y="188" width="17" height="17"/>
                     <text x="53" y="201">Directory</text>
-                    <rect x="367" y="123" width="121" height="42" rx="5"/>
+                    <rect x="367" y="123" width="135" height="42" rx="5"/>
                     <use href="#icon-database" x="376" y="135" width="17" height="17"/>
                     <text x="399" y="148">DynamoDB</text>
                   </g>
@@ -164,10 +163,16 @@
                   </g>
                   <path class="direction-tip" d="m360 140 7 4-7 4" fill="none" stroke="currentColor"/>
                   <path class="map-marks" d="M17 20h14m-7-7v14M477 20h14m-7-7v14M17 268h14m-7-7v14M477 268h14m-7-7v14"/>
+                  <g class="flow-packets" aria-hidden="true">
+                    <circle class="flow-packet" r="4" data-phase="input" data-route="M155 91H161Q177 91 177 107V128Q177 144 193 144H201"/>
+                    <circle class="flow-packet" r="4" data-phase="input" data-route="M155 197H161Q177 197 177 181V160Q177 144 193 144H201"/>
+                    <circle class="flow-packet" r="4" data-phase="output" data-route="M307 144H363"/>
+                  </g>
                 </svg>
               </div>
               <figcaption><span class="figure-number">FIG. 03</span><div><strong>User management platform</strong><p>React modules use a Node.js backend and DynamoDB.</p></div></figcaption>
             </figure>
+          </div>
           </div>
         </div>
       </div>
@@ -250,5 +255,6 @@
     <span>Adithyadev MR <span class="footer-divider">/</span> Bengaluru, India</span>
     <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
   </footer>
+  <script src="motion.js" defer></script>
 </body>
 </html>

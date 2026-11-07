@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Adithya, Lead Software Engineer at PowerSchool. Identity platforms, event-driven workflows, and backend systems in Node.js, TypeScript, and AWS.">
+  <meta name="theme-color" content="#101217">
+  <title>One sign-in across products — Adithya</title>
+  <link rel="icon" href="../mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="symbol-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-stack" viewBox="0 0 24 24">
+      <path d="m3 8 9-5 9 5-9 5-9-5Zm0 4 9 5 9-5M3 16l9 5 9-5"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/>
+    </symbol>
+    <symbol id="icon-session" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3"/><path d="M5 20v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>
+    </symbol>
+    <symbol id="icon-queue" viewBox="0 0 24 24">
+      <rect x="4" y="7" width="4" height="10" rx="1"/><rect x="10" y="7" width="4" height="10" rx="1"/><rect x="16" y="7" width="4" height="10" rx="1"/>
+    </symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>
+    </symbol>
+    <symbol id="icon-window" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18m-8 0v11"/>
+    </symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12a8 3 0 0 0 16 0V6m-16 6a8 3 0 0 0 16 0"/>
+    </symbol>
+    <symbol id="icon-code" viewBox="0 0 24 24">
+      <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"/>
+    </symbol>
+  </svg>
+  <header class="site-header wrap">
+    <a class="brand" href="../index.html"><span>Adithya<small>Lead Software Engineer</small></span></a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html#work">Work</a>
+      <a href="../notes/index.html">Case studies</a>
+      <a href="../index.html#contact">Contact <span aria-hidden="true">↓</span></a>
+    </nav>
+  </header>
+<main id="main" tabindex="-1">
+      <header class="article-header wrap"><a class="quiet-link" href="index.html">← All case studies</a><p class="kicker">Identity &amp; access / PowerSchool</p><h1>One sign-in across products</h1><p class="article-lede">Centralizing authentication while keeping account context useful across a multi-product environment.</p><div class="article-meta"><span>Project write-up</span><span>Adithya · Lead Software Engineer</span></div></header>
+      <div class="article-layout wrap">
+        <aside class="article-contents"><p>On this page</p><nav aria-label="Article contents"><a href="#context">The problem</a><a href="#ownership">My contribution</a><a href="#implementation">Inside the system</a><a href="#outcome">The outcome</a></nav></aside>
+        <article class="article-body">
+          <section id="context"><h2>The problem</h2><p>PowerSchool’s multi-product environment needed centralized single sign-on that also supported account metadata.</p></section>
+          <section id="ownership"><h2>My contribution</h2><p>As a Senior Software Engineer, I designed and implemented the centralized SSO solution with Auth0 and OpenID Connect, including custom authentication rules for metadata persistence. Later, as Lead Software Engineer, I led development of the MFA service.</p></section>
+          <section id="implementation"><h2>Account context alongside sign-on</h2><p>The implementation included custom Auth0 rules for persisting account metadata. The SSO work therefore covered both authentication and the account context associated with it. MFA was a later service I led across products.</p><figure class="article-diagram"><div class="identity-responsibilities">
+  <p class="diagram-overline">A shared platform, three responsibilities</p>
+  <div><span class="responsibility-number">01</span><p><strong>Sign-on</strong><span>Centralized authentication with OpenID Connect</span></p></div>
+  <div><span class="responsibility-number">02</span><p><strong>Account context</strong><span>Metadata persistence through custom Auth0 rules</span></p></div>
+  <div><span class="responsibility-number">03</span><p><strong>Protection</strong><span>Multi-factor authentication across products</span></p></div>
+</div><figcaption>Responsibilities across the identity work, including the later MFA service.</figcaption></figure></section>
+          <section id="outcome"><h2>The outcome</h2><dl class="identity-outcomes"><div><dt>60,000+</dt><dd>Daily active users on the SSO platform.</dd></div><div><dt>6+ products</dt><dd>Covered by the MFA service I later led.</dd></div></dl></section>
+          <div class="article-next"><span class="kicker">Next project</span><a href="invitations.html">Automating account invitations <span aria-hidden="true">→</span></a></div>
+        </article>
+      </div>
+    </main>  <footer class="site-footer wrap">
+    <span>Adithyadev MR <span class="footer-divider">/</span> Bengaluru, India</span>
+    <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+  </footer>
+</body>
+</html>

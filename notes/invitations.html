@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Adithya, Lead Software Engineer at PowerSchool. Identity platforms, event-driven workflows, and backend systems in Node.js, TypeScript, and AWS.">
+  <meta name="theme-color" content="#101217">
+  <title>From manual step to automated invitation — Adithya</title>
+  <link rel="icon" href="../mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="symbol-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-stack" viewBox="0 0 24 24">
+      <path d="m3 8 9-5 9 5-9 5-9-5Zm0 4 9 5 9-5M3 16l9 5 9-5"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/>
+    </symbol>
+    <symbol id="icon-session" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3"/><path d="M5 20v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>
+    </symbol>
+    <symbol id="icon-queue" viewBox="0 0 24 24">
+      <rect x="4" y="7" width="4" height="10" rx="1"/><rect x="10" y="7" width="4" height="10" rx="1"/><rect x="16" y="7" width="4" height="10" rx="1"/>
+    </symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>
+    </symbol>
+    <symbol id="icon-window" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18m-8 0v11"/>
+    </symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12a8 3 0 0 0 16 0V6m-16 6a8 3 0 0 0 16 0"/>
+    </symbol>
+    <symbol id="icon-code" viewBox="0 0 24 24">
+      <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"/>
+    </symbol>
+  </svg>
+  <header class="site-header wrap">
+    <a class="brand" href="../index.html"><span>Adithya<small>Lead Software Engineer</small></span></a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html#work">Work</a>
+      <a href="../notes/index.html">Case studies</a>
+      <a href="../index.html#contact">Contact <span aria-hidden="true">↓</span></a>
+    </nav>
+  </header>
+<main id="main" tabindex="-1">
+      <header class="article-header wrap"><a class="quiet-link" href="index.html">← All case studies</a><p class="kicker">Event-driven workflows / PowerSchool</p><h1>From manual step to automated invitation</h1><p class="article-lede">A midnight schedule, a duplicate-send check, and a deliberate daily recovery cadence.</p><div class="article-meta"><span>Project write-up</span><span>Adithya · Lead Software Engineer</span></div></header>
+      <div class="article-layout wrap">
+        <aside class="article-contents"><p>On this page</p><nav aria-label="Article contents"><a href="#context">The manual step</a><a href="#ownership">What I built</a><a href="#execution">The daily run</a><a href="#recovery">Failures &amp; recovery</a><a href="#outcome">The change</a></nav></aside>
+        <article class="article-body">
+          <section id="context"><h2>The manual step</h2><p>Inviting users who did not yet have accounts was a manual process at PowerSchool. Automating that step was the focus of this project.</p></section>
+          <section id="ownership"><h2>What I built</h2><p>I built a distributed, asynchronous account invitation workflow using AWS serverless services and Auth0. My contribution covered the workflow that replaced the manual invitation process.</p></section>
+          <figure class="article-diagram service-inventory"><svg class="workflow-map" viewBox="0 0 480 260" role="img" aria-label="Invitation workflow building blocks. EventBridge Schedules for scheduling, SQS for messages, Step Functions for orchestration, Lambda for execution, and Auth0 for invitations.">
+  <g class="service-node">
+    <rect x="16" y="18" width="216" height="64" rx="7"/><text class="service-role" x="32" y="40">SCHEDULING</text><text x="32" y="65">EventBridge Schedules</text>
+    <rect x="248" y="18" width="216" height="64" rx="7"/><text class="service-role" x="264" y="40">MESSAGES</text><text x="264" y="65">SQS</text>
+    <rect x="16" y="98" width="216" height="64" rx="7"/><text class="service-role" x="32" y="120">ORCHESTRATION</text><text x="32" y="145">Step Functions</text>
+    <rect x="248" y="98" width="216" height="64" rx="7"/><text class="service-role" x="264" y="120">EXECUTION</text><text x="264" y="145">Lambda</text>
+    <rect class="invitation-node" x="16" y="178" width="448" height="64" rx="7"/><text class="service-role" x="32" y="200">ACCOUNT INVITATIONS</text><text x="32" y="225">Auth0</text>
+  </g>
+</svg><figcaption>Technologies used in the workflow, grouped by responsibility. This inventory does not specify execution order.</figcaption></figure>
+          <section id="execution">
+            <h2>The daily run</h2>
+            <p>An EventBridge schedule triggered the system at midnight for customers. Scheduling gave the invitation process a regular daily starting point.</p>
+            <ol class="execution-steps">
+              <li><span class="step-label">01 / Trigger</span><h3>Start at midnight</h3><p>The EventBridge schedule started the invitation workflow.</p></li>
+              <li><span class="step-label">02 / Check</span><h3>Check for a previous send</h3><p>Before sending an email, the responsible Lambda checked whether an email had already been sent. This check prevented duplicate invitations.</p></li>
+              <li><span class="step-label">03 / Act</span><h3>Send or skip</h3><p>The sender skipped emails that had already been sent and sent the remaining invitations.</p></li>
+            </ol>
+          </section>
+          <section id="recovery">
+            <h2>Failures and the daily recovery cadence</h2>
+            <p>Failures were logged and generated alerts. We chose to rely on the next day’s scheduled run for another attempt, rather than introducing a dedicated retry queue.</p>
+            <div class="tradeoff-note"><h3>Why a daily run was enough</h3><p>Waiting for the next scheduled run was sufficient for this use case. We accepted that delay and kept recovery aligned with the daily cadence. The previous-send check prevented an already-sent email from being duplicated on subsequent runs.</p></div>
+          </section>
+          <section id="outcome"><h2>The change</h2><div class="outcome-comparison"><p><span>Before</span>Manual account invitations</p><span aria-hidden="true">→</span><p><span>After</span>Asynchronous invitation automation</p></div></section>
+          <div class="article-next"><span class="kicker">Next project</span><a href="identity.html">One sign-in across products <span aria-hidden="true">→</span></a></div>
+        </article>
+      </div>
+    </main>  <footer class="site-footer wrap">
+    <span>Adithyadev MR <span class="footer-divider">/</span> Bengaluru, India</span>
+    <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+  </footer>
+</body>
+</html>

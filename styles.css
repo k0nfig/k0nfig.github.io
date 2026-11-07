@@ -329,11 +329,6 @@ ul, ol {
   stroke-width: 1.35;
 }
 
-.trace-joints circle {
-  fill: #d9f793;
-  stroke: #242d20;
-  stroke-width: 1.5;
-}
 
 .map-node rect {
   fill: #1d222a;
@@ -1719,4 +1714,73 @@ ul, ol {
   background: var(--panel);
   border-color: var(--text);
   color: var(--text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button,
+  .contact-links a {
+    transition: color 160ms ease, background 160ms ease,
+      border-color 160ms ease, transform 180ms ease;
+  }
+  .button:active,
+  .contact-links a:active {
+    transform: translateY(1px);
+  }
+  .read-link span,
+  .article-next a span,
+  .note-card h2 span {
+    display: inline-block;
+    transition: transform 180ms ease;
+  }
+  .read-link:hover span,
+  .read-link:focus-visible span,
+  .article-next a:hover span,
+  .article-next a:focus-visible span,
+  .note-card:hover h2 span,
+  .note-card:focus-visible h2 span {
+    transform: translateX(3px);
+  }
+}
+
+/* All panels share a grid cell so the tallest caption reserves space for every tab. */
+.systems-panels {
+  display: grid;
+}
+.systems-panels > [data-study] {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+.systems-panels > [data-study][hidden] {
+  display: block !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+.systems-panels .system-study {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.systems-panels .system-stage {
+  aspect-ratio: 520 / 288;
+  padding: 8px;
+}
+.systems-panels .system-stage svg {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  overflow: hidden;
+}
+.systems-panels .system-study figcaption {
+  flex: 1;
+}
+.flow-packet {
+  fill: #efffc7;
+  stroke: #728d45;
+  stroke-width: 1.5;
+  opacity: 0;
+  offset-distance: 0%;
+  offset-rotate: 0deg;
+}
+.systems-panels .map-node text {
+  font-size: 16px;
 }

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare offset and checkpoint pagination, see where ULIDs fit, and learn how DynamoDB cursors and filtered counts work.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#101217">
+  <title>Offset vs. checkpoint pagination — Adithya</title>
+  <link rel="icon" href="../mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../motion.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="brand" href="../index.html"><span>Adithya<small>Lead Software Engineer</small></span></a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html#work">Work</a>
+      <a href="../notes/index.html">Case studies</a>
+      <a href="index.html" class="blog-section-link">Blog</a>
+      <a href="../index.html#contact">Contact <span aria-hidden="true">↓</span></a>
+    </nav>
+  </header>
+
+  <main class="blog-post" id="main" tabindex="-1">
+    <header class="article-header wrap">
+      <a class="quiet-link" href="index.html">← All posts</a>
+      <p class="kicker">Backend engineering</p>
+      <h1>Offset vs. checkpoint pagination</h1>
+      <p class="article-lede">Two ways to fetch the next page, what happens when the data changes between requests, and how to choose between them.</p>
+      <div class="article-meta"><span>Adithya</span><span>Draft</span></div>
+    </header>
+
+    <div class="article-layout wrap">
+      <aside class="article-contents">
+        <p>On this page</p>
+        <nav aria-label="Article contents">
+          <a href="#offset">Offset pagination</a>
+          <a href="#checkpoint">Checkpoint pagination</a>
+          <a href="#changes">When rows change</a>
+          <a href="#ulids">ULIDs as sort keys</a>
+          <a href="#dynamodb">DynamoDB pagination</a>
+          <a href="#counts">Counting filtered results</a>
+          <a href="#choose">Which one to choose</a>
+        </nav>
+      </aside>
+      <article class="article-body" aria-label="Offset vs. checkpoint pagination">
+        <p>Say you’re building an activity feed that shows three events at a time, newest first. Page one returns events 106, 105, and 104. When the reader asks for more, the request can tell the database to skip the first three rows or to continue after event 104. Both return the same rows while the list stays put. Add one event at the top, and they diverge.</p>
+
+        <section id="offset">
+          <h2>Offset pagination skips a number of rows</h2>
+          <p>Offset pagination turns a page number into a row count. With three rows per page, page two is <code>LIMIT 3 OFFSET 3</code>. The database orders the results, skips three, and returns the next three.</p>
+          <figure class="pagination-figure">
+            <div class="pagination-lane">
+              <span>Page 1 <code>OFFSET 0</code></span>
+              <div class="pagination-rows"><span class="page-row">106</span><span class="page-row">105</span><span class="page-row">104</span></div>
+            </div>
+            <div class="pagination-lane">
+              <span>Page 2 <code>OFFSET 3</code></span>
+              <div class="pagination-rows"><span>106</span><span>105</span><span>104</span><span class="page-row">103</span><span class="page-row">102</span><span class="page-row">101</span></div>
+            </div>
+            <figcaption>Event IDs run from newest to oldest. On page two, the outlined rows are skipped and the filled rows are returned.</figcaption>
+          </figure>
+          <pre><code>SELECT id, created_at
+FROM events
+ORDER BY created_at DESC, id DESC
+LIMIT 3 OFFSET 3;</code></pre>
+          <p>The appeal is direct navigation. If a user wants page 12, the API can calculate its starting offset without loading pages 1 through 11. The database still has to work through the skipped rows, so deep offsets can be expensive even when an index supplies the ordering. [<a href="https://www.postgresql.org/docs/current/queries-limit.html">PostgreSQL on LIMIT and OFFSET</a>]</p>
+        </section>
+
+        <section id="checkpoint">
+          <h2>Checkpoint pagination resumes after a sort key</h2>
+          <p>Here, a checkpoint is the sort key of the last row returned. This query pattern is also called <strong>keyset</strong> or <strong>seek</strong> pagination. An API usually hands the checkpoint back as an opaque cursor. A cursor is the token sent over the wire and can also encode an offset, so a parameter named <code>cursor</code> tells you little about the query underneath.</p>
+          <figure class="pagination-figure">
+            <div class="pagination-lane">
+              <span>Page 1</span>
+              <div class="pagination-rows"><span class="page-row">106</span><span class="page-row">105</span><span class="page-row checkpoint-row">104</span></div>
+            </div>
+            <div class="pagination-lane">
+              <span>Page 2 <code>after 104</code></span>
+              <div class="pagination-rows"><span class="checkpoint-row">104</span><span class="pagination-arrow" aria-hidden="true">→</span><span class="page-row">103</span><span class="page-row">102</span><span class="page-row">101</span></div>
+            </div>
+            <figcaption>The dashed outline marks the checkpoint. Page two starts strictly after event 104 in the displayed order.</figcaption>
+          </figure>
+          <p>The diagram labels rows by ID. The SQL uses both <code>created_at</code> and <code>id</code> because multiple events can share a timestamp. Assume <code>created_at</code> is non-null and <code>id</code> is a unique primary key. The first request omits the filter, and subsequent requests bind both values from the last row they received.</p>
+          <pre><code>SELECT id, created_at
+FROM events
+WHERE (created_at, id) &lt; ($1, $2)
+ORDER BY created_at DESC, id DESC
+LIMIT 3;</code></pre>
+          <p>PostgreSQL compares the timestamps first and compares the IDs when the timestamps tie. The strict <code>&lt;</code> places page two on the older side of the boundary and excludes the boundary row itself. A matching B-tree index on <code>(created_at, id)</code> can support a backward range scan starting at that boundary. With real workloads, check the query plan with the filters and joins the endpoint actually uses. [<a href="https://www.postgresql.org/docs/current/functions-comparisons.html#ROW-WISE-COMPARISON">PostgreSQL row comparisons</a>, <a href="https://www.postgresql.org/docs/current/indexes-ordering.html">indexes and ordering</a>]</p>
+          <p>To return a <code>hasMore</code> flag, request one extra row and return at most the page size. If the extra row exists, build the next cursor from the last row actually sent to the client. Using the extra row as the checkpoint would skip it. Keep the cursor tied to the same filters and sort order so the next request continues the same query.</p>
+        </section>
+
+        <section id="changes">
+          <h2>What happens when rows change?</h2>
+          <p>Suppose the reader already saw 106, 105, and 104. Then event 107 arrives at the top. The offset still skips three rows, but event 104 has moved to fourth place. The checkpoint still divides the list at event 104.</p>
+          <figure class="pagination-figure">
+            <div class="pagination-lane">
+              <span>Current order</span>
+              <div class="pagination-rows"><span class="new-row">107</span><span>106</span><span>105</span><span>104</span><span>103</span><span>102</span><span>101</span></div>
+            </div>
+            <div class="pagination-lane">
+              <span>Offset page 2</span>
+              <div class="pagination-rows"><span class="page-row repeated-row">104</span><span class="page-row">103</span><span class="page-row">102</span><span class="pagination-annotation">104 repeats</span></div>
+            </div>
+            <div class="pagination-lane">
+              <span>Checkpoint page 2</span>
+              <div class="pagination-rows"><span class="page-row">103</span><span class="page-row">102</span><span class="page-row">101</span></div>
+            </div>
+            <figcaption>After 107 arrives, the offset repeats an event from page one. The checkpoint continues with the three older events.</figcaption>
+          </figure>
+          <p>Start over and delete 106 after page one. The first three rows are now 105, 104, and 103. Offset pagination skips all three, so the reader never sees 103 during that traversal. The checkpoint still starts with 103.</p>
+          <figure class="pagination-figure">
+            <div class="pagination-lane">
+              <span>Current order</span>
+              <div class="pagination-rows"><span>105</span><span>104</span><span>103</span><span>102</span><span>101</span></div>
+            </div>
+            <div class="pagination-lane">
+              <span>Offset page 2</span>
+              <div class="pagination-rows"><span class="page-row">102</span><span class="page-row">101</span><span class="pagination-annotation">103 is skipped</span></div>
+            </div>
+            <div class="pagination-lane">
+              <span>Checkpoint page 2</span>
+              <div class="pagination-rows"><span class="page-row">103</span><span class="page-row">102</span><span class="page-row">101</span></div>
+            </div>
+            <figcaption>Deleting 106 shifts event 103 into the three rows skipped by the offset.</figcaption>
+          </figure>
+          <h3>A checkpoint gives you a boundary. A snapshot fixes the view.</h3>
+          <p>In the insertion example, event 107 sits on the newer side of the boundary and won’t appear as the reader continues toward older events. An event inserted on the older side can still show up. If a sortable field can change, a row can move across the boundary and be missed or repeated. A feed can often accept those semantics. An export that promises a consistent view needs an explicit snapshot or a materialized result set.</p>
+          <p>In PostgreSQL, successive reads within one <code>REPEATABLE READ</code> transaction can share a snapshot. Separate HTTP requests that open their own transactions get separate snapshots by default. Elasticsearch exposes the same distinction through <code>search_after</code> for position and a point in time for a consistent search view. [<a href="https://www.postgresql.org/docs/current/transaction-iso.html">PostgreSQL transaction isolation</a>, <a href="https://www.postgresql.org/docs/current/sql-set-transaction.html">sharing a PostgreSQL snapshot</a>, <a href="https://www.elastic.co/docs/reference/elasticsearch/rest-apis/paginate-search-results">Elasticsearch pagination</a>]</p>
+        </section>
+
+        <section id="ulids">
+          <h2>When a ULID can replace the two-column sort key</h2>
+          <p>A ULID encodes a millisecond timestamp followed by a random component. Canonical ULID strings sort by that timestamp when compared in ASCII order. If the feed can use the time encoded in the ID and the database enforces uniqueness, the ULID can serve as both the sort key and the checkpoint. [<a href="https://github.com/ulid/spec#specification">Canonical ULID specification</a>]</p>
+          <pre><code>SELECT id, created_at
+FROM events
+WHERE id &lt; $1
+ORDER BY id DESC
+LIMIT 3;</code></pre>
+          <p>Here, <code>id</code> is a PostgreSQL text primary key storing uppercase ULIDs with <code>COLLATE "C"</code>, and <code>$1</code> is the last ULID returned. Both the range comparison and the sort use the column’s collation. You can also use <code>ORDER BY id DESC LIMIT 3 OFFSET 3</code> with these same IDs. That query still skips three positions, so the insert and delete examples still apply. [<a href="https://www.postgresql.org/docs/current/collation.html">PostgreSQL collation support</a>]</p>
+          <p>Within a millisecond, ordinary ULIDs sort by their random suffix. That gives you a stable order for paging, though it can differ from the order in which the events happened. Monotonic generation can preserve generation order within the same millisecond for a single generator. Across writers, clock skew and delayed writes can put a new row anywhere relative to an existing checkpoint. Keep <code>(created_at, id)</code> if the feed must sort by the event’s recorded time. [<a href="https://github.com/ulid/spec#monotonicity">ULID monotonicity</a>]</p>
+        </section>
+
+        <section id="dynamodb">
+          <h2>DynamoDB continues from a key</h2>
+          <p>Amazon DynamoDB is a NoSQL database whose <code>Query</code> API uses continuation keys. For an activity feed, you could query one account’s partition and use a ULID string as the sort key. Set <code>ScanIndexForward</code> to <code>false</code> for descending order. DynamoDB’s string sort compares UTF-8 bytes, so uppercase ULIDs retain their lexical order. [<a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html">DynamoDB Query API</a>]</p>
+          <p>When a response includes a <code>LastEvaluatedKey</code>, send that key back as <code>ExclusiveStartKey</code> with the same query. Your API can wrap it in an opaque cursor. DynamoDB provides no native offset or page-number jump in <code>Query</code>. To emulate “page 12” without a saved boundary, the application would have to walk through earlier results and discard them. [<a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html">DynamoDB query pagination</a>]</p>
+          <p>The key marks the last item DynamoDB evaluated, which may differ from the last item your reader saw. DynamoDB applies the query’s read limits before applying <code>FilterExpression</code>, so a response can have zero matches and still have a continuation key. If your API needs a page of 20 matches, set each request’s <code>Limit</code> to the number of slots still open. Keep querying until the page fills or the response has no continuation key. That way, the cursor never moves past a match you fetched but didn’t return. [<a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html">DynamoDB query pagination</a>]</p>
+        </section>
+
+        <section id="counts">
+          <h2>Count all matches when the interface needs a total</h2>
+          <p>A checkpoint tells you where to resume. For the SQL example, the extra-row check is enough to decide whether to show “Load more.” An exact “87 matching events” needs a count of the entire filtered result. That applies to both pagination methods.</p>
+          <p>Suppose a feed shows only failed events for one account. Use those same account and status predicates for the count. Leave out the checkpoint predicate, which would count only events beyond the current page boundary.</p>
+          <pre><code>SELECT COUNT(*) AS total_matches
+FROM events
+WHERE account_id = $1
+  AND status = 'failed';</code></pre>
+          <p>An exact count can do considerably more work than fetching one page. If the count and the page must describe the same point in time, run both reads against a shared snapshot. Otherwise, a concurrent insert or delete can make the two responses disagree. [<a href="https://www.postgresql.org/docs/current/functions-aggregate.html">PostgreSQL aggregate functions</a>, <a href="https://www.postgresql.org/docs/current/transaction-iso.html">transaction isolation</a>]</p>
+          <p>In DynamoDB, use <code>Select: "COUNT"</code> with the same key condition and filter. The count is per response, so start from the beginning and add up each response’s <code>Count</code> until the continuation key runs out. Returning just the count still consumes read capacity for the items evaluated. On a changing dataset, those separate requests can observe changes as they go. [<a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html">DynamoDB Query API</a>]</p>
+        </section>
+
+        <section id="choose">
+          <h2>Choose based on how people navigate</h2>
+          <dl class="technology-roles">
+            <div><dt>Numbered pages</dt><dd>Use offset for a modest admin table when people jump directly to a page and deep queries are uncommon. Check the cost at the deepest page you plan to support.</dd></div>
+            <div><dt>Feeds and timelines</dt><dd>Use checkpoint pagination when users mostly select “Load more” and new rows arrive regularly. Pick a stable sort key and add a unique tiebreaker.</dd></div>
+            <div><dt>Consistent exports</dt><dd>Define which snapshot the export represents. Then use a checkpoint inside that stable view to read it in batches, where the storage system supports it.</dd></div>
+          </dl>
+          <p>Jumping straight to page 12 is simple with an offset. A checkpoint needs an existing boundary for that page. For a “Previous” button with checkpoints, retain earlier cursors or implement a reverse query from the first row of the current page.</p>
+        </section>
+        <a class="read-link" href="index.html">← All posts</a>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer wrap">
+    <span>Adithyadev MR <span class="footer-divider">/</span> Bengaluru, India</span>
+    <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+  </footer>
+</body>
+</html>

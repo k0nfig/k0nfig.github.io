@@ -1784,3 +1784,146 @@ ul, ol {
 .systems-panels .map-node text {
   font-size: 16px;
 }
+
+.blog-section-title {
+  font-size: 1.125rem;
+  margin-bottom: 16px;
+}
+
+.blog-empty {
+  border-block: 1px solid var(--line);
+  padding-block: 24px;
+}
+
+.blog-empty p {
+  color: var(--muted);
+  max-width: 55ch;
+}
+
+.site-header nav a[aria-current="page"],
+.site-header nav .blog-section-link {
+  color: var(--accent);
+}
+
+.blog-post .article-body a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.blog-post .article-body pre {
+  margin: 20px 0;
+  padding: 16px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  font: 0.875rem/1.6 var(--mono);
+}
+
+.blog-post .article-body code {
+  font-family: var(--mono);
+}
+
+@media (max-width: 440px) {
+  .site-header .brand small {
+    display: none;
+  }
+
+  .site-header nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    column-gap: 10px;
+    row-gap: 0;
+  }
+}
+
+.blog-card h3 {
+  margin-block: 13px;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  letter-spacing: -0.05em;
+}
+
+.blog-card h3 span,
+.blog-card:hover h3,
+.blog-card:focus-visible h3 {
+  color: var(--accent);
+}
+
+.pagination-figure {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0;
+  padding: clamp(12px, 3vw, 24px);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--work);
+  font: 0.875rem/1.5 var(--mono);
+}
+
+.pagination-lane {
+  display: grid;
+  gap: 8px;
+}
+
+.pagination-lane > span {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-weight: 600;
+}
+
+.pagination-lane code,
+.pagination-annotation,
+.pagination-figure figcaption {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.pagination-rows {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination-rows > span {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 5px;
+  color: var(--muted);
+}
+
+.pagination-rows .page-row {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.pagination-rows .checkpoint-row {
+  border-color: var(--accent);
+  border-style: dashed;
+}
+
+.pagination-rows .new-row,
+.pagination-rows .repeated-row {
+  border-color: #ffd6a3;
+}
+
+.pagination-rows .new-row {
+  color: #ffd6a3;
+}
+
+.pagination-rows .repeated-row {
+  background: #ffd6a3;
+}
+
+.pagination-rows .pagination-annotation,
+.pagination-rows .pagination-arrow {
+  border: 0;
+}
+
+.pagination-figure figcaption {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  font-family: inherit;
+}

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A PostgreSQL example of the transactional outbox pattern, from the dual-write failure to retries, duplicate delivery, and ordering.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#101217">
+  <title>The transactional outbox pattern — Adithya</title>
+  <link rel="icon" href="../mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../motion.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="brand" href="../index.html"><span>Adithya<small>Lead Software Engineer</small></span></a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html#work">Work</a>
+      <a href="../notes/index.html">Case studies</a>
+      <a href="index.html" class="blog-section-link">Blog</a>
+      <a href="../index.html#contact">Contact <span aria-hidden="true">↓</span></a>
+    </nav>
+  </header>
+
+  <main class="blog-post" id="main" tabindex="-1">
+    <header class="article-header wrap">
+      <a class="quiet-link" href="index.html">← All posts</a>
+      <p class="kicker">Backend engineering</p>
+      <h1>The transactional outbox pattern</h1>
+      <p class="article-lede">Save the event with the change that produced it, then publish it from a worker that can retry.</p>
+      <div class="article-meta"><span>Adithya</span><span>Draft</span></div>
+    </header>
+
+    <div class="article-layout wrap">
+      <aside class="article-contents">
+        <p>On this page</p>
+        <nav aria-label="Article contents">
+          <a href="#dual-write">The dual-write problem</a>
+          <a href="#transaction">The database transaction</a>
+          <a href="#relay">Publishing and retries</a>
+          <a href="#consumer">Duplicates and ordering</a>
+          <a href="#trade-offs">When to use it</a>
+        </nav>
+      </aside>
+      <article class="article-body" aria-label="The transactional outbox pattern">
+        <section id="dual-write">
+          <h2>An order can be paid without shipping hearing about it</h2>
+          <p>An order service marks order 42 as paid in PostgreSQL. It then publishes an <code>OrderPaid</code> event so a fulfillment service can create a shipment. If the process crashes after committing the update and before the broker accepts the event, the order is paid and fulfillment has nothing to process.</p>
+          <p>Publishing first opens the opposite failure window. Fulfillment can receive the event even if the order transaction later rolls back. The order service has two independent writes, and either can succeed on its own. With a transactional outbox, the order update and the record of the event commit in the same database transaction. [<a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html">AWS transactional outbox guidance</a>]</p>
+        </section>
+
+        <section id="transaction">
+          <h2>Commit the order and its event together</h2>
+          <p>The outbox is a table in the order database. Each row has a stable event ID, a type, the order ID, and the data the consumer needs. In this PostgreSQL example, <code>$1</code> is the order ID and <code>$2</code> is an application-generated event ID. The outbox table uses <code>event_id</code> as its primary key.</p>
+          <pre><code>WITH paid_order AS (
+  UPDATE orders
+  SET status = 'paid'
+  WHERE id = $1 AND status = 'pending'
+  RETURNING id
+)
+INSERT INTO outbox (event_id, event_type, order_id, payload)
+SELECT $2, 'OrderPaid', id, jsonb_build_object('order_id', id)
+FROM paid_order;</code></pre>
+          <p>The statement inserts an event only when the order changes from pending to paid. If the event insert fails, the update rolls back with it. If the order is already paid, the statement changes zero rows and emits no second event for that transition.</p>
+          <figure class="article-diagram">
+            <dl class="technology-roles">
+              <div><dt>1. Commit</dt><dd>Order service → PostgreSQL. Change order 42 to paid and insert the <code>OrderPaid</code> row in one transaction.</dd></div>
+              <div><dt>2. Publish</dt><dd>Outbox worker → message broker. Read the committed row and send it with its original event ID.</dd></div>
+              <div><dt>3. Consume</dt><dd>Message broker → fulfillment service. Create a shipment once for that event ID.</dd></div>
+            </dl>
+            <figcaption>The order service records the event before the worker contacts the broker.</figcaption>
+          </figure>
+        </section>
+
+        <section id="relay">
+          <h2>Publish separately and plan for retries</h2>
+          <p>A polling worker reads pending outbox rows in batches. It publishes each event and marks the row sent after the broker confirms acceptance. With several workers, claim a batch in a short database transaction. PostgreSQL’s <code>FOR UPDATE SKIP LOCKED</code> lets workers skip rows being claimed elsewhere. Store a claim that expires if the worker dies so another worker can retry without holding a database transaction open during the network call. [<a href="https://www.postgresql.org/docs/current/sql-select.html#SQL-FOR-UPDATE-SHARE">PostgreSQL locking clauses</a>]</p>
+          <figure class="article-diagram">
+            <dl class="technology-roles">
+              <div><dt>Publish fails</dt><dd>The row stays eligible for retry. The order update and event are already committed.</dd></div>
+              <div><dt>Broker accepts</dt><dd>The message is available for delivery, but the outbox row has yet to be marked sent.</dd></div>
+              <div><dt>Worker crashes</dt><dd>The next worker may publish the same event again once the claim expires. Both copies carry the same event ID.</dd></div>
+            </dl>
+            <figcaption>Broker acceptance and marking the row sent happen in separate systems.</figcaption>
+          </figure>
+          <p>Change data capture (CDC) is another way to run the relay. A connector such as Debezium can read outbox inserts from the database’s change log and route them to Kafka. Polling requires a worker and periodic reads. CDC requires a connector, recoverable offsets, and enough change-log retention for it to catch up after downtime. [<a href="https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html">Debezium Outbox Event Router</a>]</p>
+        </section>
+
+        <section id="consumer">
+          <h2>Deduplicate by event ID and order by business key</h2>
+          <p>Fulfillment can save the event ID in a <code>processed_events</code> table with a unique constraint. Insert that ID and create the shipment in the same local transaction. If the ID already exists, skip the shipment insert. Acknowledge the broker message after the transaction commits, so a crash before commit leaves the message available to retry. If the consumer calls an external shipping API, use the event ID as that API’s idempotency key where supported.</p>
+          <p>Some events also need to arrive in sequence. An <code>OrderCancelled</code> event may need to follow <code>OrderPaid</code> for the same order. Use the order ID as the message key when the broker supports per-key ordering, and have the relay publish those events in sequence. Sending both events to the same Kafka partition won’t fix a relay that publishes them out of order. If gaps matter, include an order version so the consumer can detect a missing earlier event. [<a href="https://debezium.io/blog/2019/02/19/reliable-microservices-data-exchange-with-the-outbox-pattern/">Debezium’s outbox example</a>]</p>
+        </section>
+
+        <section id="trade-offs">
+          <h2>When the outbox is worth operating</h2>
+          <p>Use it when another system needs to hear about a committed change even if the broker is briefly unavailable. The order service can return success as soon as the database commits. Fulfillment catches up when the worker can publish again, so the order may be visible before the shipment exists.</p>
+          <p>The relay also needs monitoring. Track the age of the oldest pending row, failed attempts, and backlog size. A message that keeps failing needs a way to be investigated and replayed. Give sent rows a retention policy and keep consumer deduplication records long enough to cover the replay window. If every required effect fits in one database transaction, that transaction can handle the whole operation.</p>
+        </section>
+        <a class="read-link" href="index.html">← All posts</a>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer wrap">
+    <span>Adithyadev MR <span class="footer-divider">/</span> Bengaluru, India</span>
+    <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+  </footer>
+</body>
+</html>

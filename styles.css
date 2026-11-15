@@ -1764,6 +1764,12 @@ ul, ol {
   aspect-ratio: 520 / 288;
   padding: 8px;
 }
+.systems-panels .system-stage.is-hovered {
+  box-shadow: inset 0 0 0 1px #d9f79655;
+}
+.systems-panels .system-stage.is-hovered .traces {
+  stroke: var(--accent);
+}
 .systems-panels .system-stage svg {
   width: 100%;
   height: 100%;

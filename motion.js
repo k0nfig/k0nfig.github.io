@@ -2,8 +2,10 @@
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   const activeAnimations = new Set();
   const motionSystems = document.querySelector("[data-systems]");
-  let diagramAnimations = [];
-  let diagramVisible = !("IntersectionObserver" in window);
+  const diagramAnimations = [];
+  const hoverDelay = 250;
+  let hoveredStage = null;
+  let hoverTimer;
 
   function animateElement(element, frames, options) {
     if (motionPreference.matches || !element.animate) return;
@@ -15,22 +17,15 @@
     return animation;
   }
 
-  function syncDiagramPlayback() {
-    const shouldPlay = diagramVisible && !document.hidden && !motionPreference.matches;
-    diagramAnimations.forEach((animation) => {
-      if (shouldPlay) animation.play();
-      else animation.pause();
-    });
+  function resetDiagram() {
+    window.clearTimeout(hoverTimer);
+    hoveredStage?.classList.remove("is-hovered");
+    hoveredStage = null;
+    diagramAnimations.forEach((animation) => animation.cancel());
+    diagramAnimations.length = 0;
   }
 
-  function animateDiagram(study) {
-    diagramAnimations.forEach((animation) => animation.cancel());
-    diagramAnimations = [];
-
-    const diagram = study.querySelector("svg");
-    const packets = diagram.querySelectorAll("[data-route]");
-    if (!packets.length || motionPreference.matches) return;
-
+  function animateDiagram(diagram, packets) {
     const cycleStart = document.timeline.currentTime;
     function addCycle(element, frames) {
       const animation = animateElement(element, frames, {
@@ -78,30 +73,40 @@
       { fill: "#252e20", stroke: "#c4e78b", offset: 0.62 },
       { fill: "#252e20", stroke: "#c4e78b", offset: 1 },
     ]);
-    syncDiagramPlayback();
   }
 
   if (motionSystems) {
-    animateDiagram(motionSystems.querySelector("[data-study]:not([hidden])"));
+    motionSystems.querySelectorAll(".system-stage").forEach((stage) => {
+      const diagram = stage.querySelector("svg");
+      const packets = diagram.querySelectorAll("[data-route]");
+      if (!packets.length) return;
+
+      stage.addEventListener("pointerenter", (event) => {
+        if (event.pointerType !== "mouse") return;
+        resetDiagram();
+        hoveredStage = stage;
+        stage.classList.add("is-hovered");
+        if (motionPreference.matches || document.hidden) return;
+
+        hoverTimer = window.setTimeout(() => {
+          animateDiagram(diagram, packets);
+        }, hoverDelay);
+      });
+
+      stage.addEventListener("pointerleave", (event) => {
+        if (event.pointerType === "mouse" && hoveredStage === stage) resetDiagram();
+      });
+    });
 
     motionSystems.addEventListener("studychange", (event) => {
+      resetDiagram();
       animateElement(event.detail.study, [
         { opacity: 0.5 },
         { opacity: 1 },
       ], { duration: 240, easing: "ease-out" });
-      animateDiagram(event.detail.study);
     });
 
-
-    if ("IntersectionObserver" in window) {
-      const diagramObserver = new IntersectionObserver((entries) => {
-        diagramVisible = entries[0].isIntersecting;
-        syncDiagramPlayback();
-      }, { threshold: 0.1 });
-      diagramObserver.observe(motionSystems);
-    }
-
-    document.addEventListener("visibilitychange", syncDiagramPlayback);
+    document.addEventListener("visibilitychange", resetDiagram);
   }
 
   if ("IntersectionObserver" in window && !motionPreference.matches) {
@@ -123,7 +128,9 @@
   }
 
   motionPreference.addEventListener("change", () => {
-    if (motionPreference.matches) activeAnimations.forEach((animation) => animation.cancel());
-    if (motionSystems) animateDiagram(motionSystems.querySelector("[data-study]:not([hidden])"));
+    if (motionPreference.matches) {
+      resetDiagram();
+      activeAnimations.forEach((animation) => animation.cancel());
+    }
   });
 }
